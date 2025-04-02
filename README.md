@@ -61,3 +61,52 @@ Queremos que tengas el tiempo suficiente para hacerlo bien, pero sin presionarte
 ---
 
 ¡Buena suerte y esperamos ver tu solución! 🚀
+
+
+# 🚀 Despliegue de la API en AWS ECS + RDS
+
+Este documento describe cómo desplegar la API en AWS utilizando **ECS (Elastic Container Service)** y **RDS (Relational Database Service)**, además de cómo manejar secretos de forma segura con **AWS Secrets Manager** y cómo configurar un pipeline de **CI/CD con GitHub Actions y Terraform**.
+
+---
+
+## 📌 1️⃣ Infraestructura con AWS ECS y RDS (Terraform)
+
+El despliegue de la API sigue estos pasos clave:
+
+### 🛠️ **Base de Datos (RDS)**
+- Se usa **AWS RDS (PostgreSQL)**.
+- Se habilita **Multi-AZ** para alta disponibilidad.
+- Las credenciales de la base de datos se almacenan en **AWS Secrets Manager**.
+
+### 🚢 **ECS (Elastic Container Service)**
+- Se define una **Task Definition** en **Fargate**.
+- Se crea un **ECS Service** dentro de un **Cluster**.
+- Se asocia un **Load Balancer** para manejar el tráfico HTTP.
+- Se configura **Auto Scaling** basado en CPU y memoria.
+
+### 🌐 **Red (Networking)**
+- Se despliega la infraestructura en una **VPC con subnets privadas y públicas**.
+- Se configuran **Security Groups** para restringir el acceso a la base de datos.
+
+
+---
+
+## 🔑 2️⃣ Manejo de Secretos con AWS Secrets Manager
+
+Para manejar credenciales de manera segura:
+
+1. **Almacenar variables sensibles** (`DB_USER`, `DB_PASSWORD`, `JWT_SECRET`, etc.) en **AWS Secrets Manager**.
+2. **Configurar IAM** para que **solo ECS tenga acceso** a los secretos.
+3. **Pasar secretos a la Task Definition de ECS**.
+
+---
+
+## 🔄 3️⃣ CI/CD con GitHub Actions y Terraform
+
+Para automatizar el despliegue, se configura un **pipeline en GitHub Actions** que:
+
+1. **Ejecuta pruebas con Jest** en cada `push` o `pull request`.
+2. **Construye y sube la imagen Docker** a **Amazon ECR**.
+3. **Ejecuta Terraform** para desplegar la infraestructura.
+4. **Actualiza el servicio en ECS** con la nueva imagen.
+
